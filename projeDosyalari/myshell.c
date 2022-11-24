@@ -98,7 +98,7 @@ int execArgs(char **args)
             for(j=0; j<iArgs; j++){
             	pid = fork();
             	if(!pid){
-	        i = execv("execx",args);
+	        	i = execv("execx",args);
 	        }
             }
         }
