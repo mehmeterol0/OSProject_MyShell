@@ -7,7 +7,7 @@
 
 #define MAX_CAHARACTER 1000 
 #define MAX_LIST 100        
-#define CMD_SIZE 6          
+#define CMD_SIZE 7          
 
 int input(char *str);
 
@@ -93,14 +93,20 @@ int execArgs(char **args)
     int iArgs= atoi(args[2]);
     if (pid == 0)
     {
+    //(strcmp("execx", args[0]) == 0)
         if (strcmp("execx", args[0]) == 0)
         {
-            for(j=0; j<iArgs; j++){
-            	pid = fork();
-            	if(!pid){
-	        	i = execv("execx",args);
-	        }
-            }
+          if(strcmp("-t", args[1]) == 0){
+		    for(j=0; j<iArgs; j++){
+		    	pid = fork();
+		    	if(!pid){
+				i = execv("execx",args);
+			}
+		    }
+          }
+          if((sizeof(args) / sizeof(int)) > 5){
+            printf("dogru\n");
+          }
         }
         if (strcmp("bash", args[0]) == 0)
         {
