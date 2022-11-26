@@ -3,11 +3,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <string.h>
-
-
-#define MAX_CAHARACTER 1000 
-#define MAX_LIST 100        
-#define CMD_SIZE 7          
+  
 
 int input(char *str);
 
@@ -15,11 +11,11 @@ int bosmu(char *str);
 
 int execArgs(char **args);
 
-void ayir(char *str, char **parsed, char *delim);
+void ayir(char *str, char **cevirici, char *sinirlayici);
 
-int cmdHandler(char **args, char **cmdList);
+int cmd(char **args, char **komutListesi);
 
-void execCommand(char **args, char **cmdList, int index);
+void execCommand(char **args, char **komutListesi, int index);
 
 void temizle(void);
 
@@ -31,10 +27,10 @@ int kontrol(char **args);
 
 int main()
 {
-    char girilenDeger[MAX_CAHARACTER] = {'\0'};
-    char *parsedArgs[MAX_LIST] = {NULL};
-    char *processes[MAX_LIST] = {NULL};
-    char *komutlar[CMD_SIZE] = {"writef","bash","execx", "cat", "clear", "exit", NULL}; 
+    char girilenDeger[1000] = {'\0'};
+    char *ceviriciArgs[100] = {NULL};
+    char *processes[100] = {NULL};
+    char *komutlar[8] = {"writef","bash","execx", "cat","ls", "clear", "exit", NULL}; 
 
     int i;
     while (1)
@@ -47,8 +43,8 @@ int main()
 
         while (processes[i] != NULL)
         {
-            ayir(processes[i], parsedArgs, " "); 
-            if (cmdHandler(parsedArgs, komutlar))
+            ayir(processes[i], ceviriciArgs, " "); 
+            if (cmd(ceviriciArgs, komutlar))
             {
                 printf("yanlis bir komut girildi\n");
             }
@@ -89,32 +85,41 @@ int execArgs(char **args)
     pid_t pid = fork();
     int i,j;
     int result = 0;
-    int kontrol = 0;
     int iArgs= atoi(args[2]);
+    int argBoyut = (sizeof(args) / sizeof(int));
     if (pid == 0)
     {
+    
     //(strcmp("execx", args[0]) == 0)
         if (strcmp("execx", args[0]) == 0)
         {
-          if(strcmp("-t", args[1]) == 0){
-		    for(j=0; j<iArgs; j++){
-		    	pid = fork();
-		    	if(!pid){
-				i = execv("execx",args);
-			}
-		    }
+          if((strcmp("-t", args[1]) == 0)){
+          	if(args[3] !=NULL || args[5] != NULL ){
+           //pdf'e gore bir programın calistirilmasi icin en az 4 parametreye ihtiyac var.		
+	   //dogru bir sekilde girildiginde argBoyutumun 2 oldugunu gordum. yazdırma icinde 4'dur.
+			    for(j=0; j<iArgs; j++){
+			    	pid = fork();
+			    	if(!pid){
+					i = execv("execx",args);
+				}
+			    }
+		 }
           }
-          if((sizeof(args) / sizeof(int)) > 5){
-            printf("dogru\n");
+	  else{ 
+		printf("eksik parametre/yanlis parametre girildi %d\n",argBoyut);
+	        exit(0);
           }
+        }
+        if(strcmp("cat", args[0]) == 0){
+	    i = execv("/bin/cat", args);
+        }
+        if(strcmp("ls", args[0]) == 0){
+            i = execv("/bin/ls",args);
         }
         if (strcmp("bash", args[0]) == 0)
         {
-            i = execv("/bin/sh", args);
+            execv("/bin/sh", args);
         }
-	if (strcmp("writef", args [3]) == 0){
-	    i = execv("writef",args);
-	}
         else
         {
             i = execv(args[0], args);
@@ -135,14 +140,14 @@ int execArgs(char **args)
     return result;
 }
 
-int cmdHandler(char **args, char **cmdList)
+int cmd(char **args, char **komutListesi)
 {
     int i = 0;
     int isFound = 0;
 
-    while (cmdList[i] != NULL)
+    while (komutListesi[i] != NULL)
     {
-        if (strcmp(args[0], cmdList[i]) == 0)
+        if (strcmp(args[0], komutListesi[i]) == 0)
         {
             isFound = 1;
             break;
@@ -154,7 +159,7 @@ int cmdHandler(char **args, char **cmdList)
     {
         if (!parameterError(args[0], args))
         {
-            execCommand(args, cmdList, i);
+            execCommand(args, komutListesi, i);
         }
         else
         {
@@ -165,14 +170,14 @@ int cmdHandler(char **args, char **cmdList)
     return isFound ? 0 : -1;
 }
 
-void execCommand(char **args, char **cmdList, int index)
+void execCommand(char **args, char **komutListesi, int index)
 {
 
-    if (strcmp("exit", cmdList[index]) == 0)
+    if (strcmp("exit", komutListesi[index]) == 0)
     {
         exit(0);
     }
-    else if (strcmp("clear", cmdList[index]) == 0)
+    else if (strcmp("clear", komutListesi[index]) == 0)
     {
         temizle(); 
     }
@@ -182,12 +187,12 @@ void execCommand(char **args, char **cmdList, int index)
     }
 }
 
-void ayir(char *str, char **parsed, char *delim)
+void ayir(char *str, char **cevirici, char *sinirlayici)
 {
     int i = 0;
-    while ((parsed[i] = strsep(&str, delim)) != NULL)
+    while ((cevirici[i] = strsep(&str, sinirlayici)) != NULL)
     {
-        if (bosmu(parsed[i]))
+        if (bosmu(cevirici[i]))
         {
             continue;
         }
