@@ -33,14 +33,21 @@ int main(int argc, char *argv[]) {
   int argBoyut = ((sizeof(argv)) / (sizeof (int)));
   
   if(strcmp("writef", argv[3]) == 0){ //sadece programı istedigi kadar calıstırır.
-  	for(j=0; j<iArgs; j++){
-  		  pid = fork();
-  		  if(pid == 0){
-			  printf("New process got pid: %d - ppid : %d\n", getpid(), getppid());
-			  execv (argv[3],argv);
+     if(argBoyut == 2){ //sadece ilgili program calismasi icin gereken parametre 4 yerine 2 olmalidir. argBoyut 2 olarak gelmekte.
+	  	for(j=0; j<iArgs; j++){
+	  		  pid = fork();
+	  		  if(pid == 0){
+				  printf("New process got pid: %d - ppid : %d\n", getpid(), getppid());
+				  execv (argv[3],argv);
+			  }
 		  }
 	  }
-	  if(strcmp("-f", argv[4]) == 0){ // alınan parametreye gore dosyaya yazma islemi.
+     else{
+     	printf("argBoyut : %d",argBoyut);
+     	exit(0);
+     }
+     if(strcmp("-f", argv[4]) == 0){ // alınan parametreye gore dosyaya yazma islemi.
+	     if(argBoyut == 6){ //writef -f dosya calismasi icin gelmesi gereken parametre 6 olmalidir.
 		  for(j=0; j<(iArgs/2)-1; j++){
 		  printf("New process got pid: %d - ppid : %d\n", getpid(), getppid());
 		  	pid = fork();
@@ -50,6 +57,7 @@ int main(int argc, char *argv[]) {
 			    }
 			}
 		   }
+		}
   	  }
   	  else{
   	    	printf("yanlis parametre girildi. %d\n",argBoyut);
