@@ -10,7 +10,8 @@
 
 int main()
 {
-    arayuzOlustur();
+    asciiResimOlustur();
+    //arayuzOlustur();
     char girilenDeger[1000] = {'\0'};
     char *ceviriciArgs[100] = {NULL};
     char *processes[100] = {NULL};
@@ -52,26 +53,7 @@ int bosmu(char *str)
     return 1;
 }
 
-void arayuzOlustur(){
-        printf("||======================================||\n");
-	printf("||______________________________________||\n");
-	printf("||.....Linux Shellime Hosgeldiniz.......||\n");
-	printf("||______________________________________||\n");
-	printf("||.....Kullanabileceginiz Komutlar......||\n");
-	printf("||                                      ||\n");
-	printf("||1- bash 				||\n");
-	printf("||2- execx 				||\n");
-	printf("||3- cat 				||\n");
-	printf("||4- ls 				||\n");
-	printf("||5- clear 				||\n");
-	printf("||6- exit 				||\n");
-	printf("||7- help : Komutlar hakkında bilgi	||\n");
-	printf("||icin help komutunu kullanınız..	||\n");
-	printf("||					||\n");
-	printf("||======================================||\n");
-	printf("\n");
-	printf("\n");
-}
+
 
 
 
@@ -232,3 +214,52 @@ void temizle()
     system("clear");
 }
 
+/*
+void arayuzOlustur(){
+        printf("                              ||======================================||\n");
+	printf("                              ||______________________________________||\n");
+	printf("                              ||.....Linux Shellime Hosgeldiniz.......||\n");
+	printf("                              ||_____________{Mehmet EROL}____________||\n");
+	printf("                              ||.....Kullanabileceginiz Komutlar......||\n");
+	printf("                              ||                                      ||\n");
+	printf("                              ||1- bash 		 	      ||\n");
+	printf("                              ||2- execx 			      ||\n");
+	printf("                              ||3- cat 				      ||\n");
+	printf("                              ||4- ls 				      ||\n");
+	printf("                              ||5- clear 			      ||\n");
+	printf("                              ||6- exit 			      ||\n");
+	printf("                              ||7- help : Komutlar hakkında bilgi     ||\n");
+	printf("                              ||icin help komutunu kullanınız..	      ||\n");
+	printf("                              ||				      ||\n");
+	printf("                              ||======================================||\n");
+	printf("\n");
+	printf("\n");
+}
+*/
+void asciiResimOlustur(){
+
+	printf("MMMMMMMMMMMMMMMMMMMW0ooONWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM||======================================||\n");
+	printf("MMMMMMMMMMMMMMMMMMMNxc:coONWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM||______________________________________||\n");
+	printf("MMMMMMMMMMMMMMWXOKWW0o:::coONWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM||.....Linux Shellime Hosgeldiniz.......||\n");
+	printf("MMMMMMMMMMMMWXkl:oKWWKxl:::coONWMMMMMMMMMMMMMMMMMMMMWNNXXXXXXXXNWMWNXK00KXNWMMMMWNXXNWMMMMMMMWNXXNWM||______________________________________||\n");
+	printf("MMMMMMMMMMWXklc::l0WNNNKxl:::coONWMMMMMMMMMMMMMMMMMNxcc:::::::ckNKxc;;;;;:lOWMMWkc:;l0WMMMMMWkc::lKM||.....Kullanabileceginiz Komutlar......||\n");
+	printf("MMMMMMMMWXkl:::co0NNkox0XKxl:::coONWMMMMMMMMMMMMMMMNo,',cxkkkk0X0c,,cxOOkxxKWMMXl,'',lKMMMMWO:',';kW||                                      ||\n");
+	printf("MMMMMMWXklc::coOXWMXd::lxKNKxl:::cdONWMMMMMMMMMMMMMNd,',xWMMMMMWx,',lKWMMMMMMMM0:';;,,dNMMMKl,;;',dN||1- bash 		 	            ||\n");
+	printf("MMMMWXklc::coOXXKXWNkc:::lx0XKxl:::cd0NMMMMMMMMMMMMNo,',dNWWWWWW0:,,,:dOXWMMMMWk;,od;';kWMXd,:xl',lX||2- execx 		 	            ||\n");
+	printf("MMWXklc::coOXXOocxXWN0dc::clxKXKxl:::cd0NWMMMMMMMMMNd,,,:clllldXW0o:,'',:oONWMXo,,xKo,,c0Wk;,xKo'':0||3- cat 		 	            ||\n");
+	printf("WXkl:::coOXXOoc::oKWNNX0dc:::lx0XKxl:::cd0NWMMMMMMMNd,',:odddd0WMMWXko:,'',lKMKc';kW0:',okc,lKNd,';k||4- ls 		 	            ||\n");
+	printf("klc::coOXXOoc::clONXdokXX0dc:::lxKNKxl:::cdKWMMMMMMNd,,,xWMMMMMMMMMMMWXx:,,,xWk;'c0MNx,',;,:OWWk;',d||5- clear 		 	            ||\n");
+	printf("c:::cxXWKdc:::cdKWWOc:cokXX0dc:::lxKNKxl::cxNMMMMMMNd,,,dWMMMMMWKO0XNNNOc,,:ONd,'lXMMKl,,,,dNMMO:''l||6- exit 		 	            ||\n");
+	printf("l:::cdKNXxl:::coONWKdc::cokXXOdc:::lxKNKxlckNMMMMMMNo,',dNMMMMMNx;;:ccc;,;cONKc',dNMMWO:',lKMMM0c'':||7- help : Komutlar hakkında bilgi     ||\n");
+	printf("0dc:::lxKXKxl:::cd0XXkoc::cokXX0dc:::o0WWK0XMMMMMMMW0ddx0WMMMMMMN0xdooodx0NMMXkdxKWMMMN0kOXWMMMNOdxx||icin help komutunu kullanınız..	    ||\n");
+	printf("WN0dc::clxKNKxl:::cd0XXklc::cokXXOdc:cxNMMMMMMMMMMMMNNNNNNNXXNWWWNNNWNNNNXNNWWNWWWNWNNNNWWWNWWNNNNXN||	     			            ||\n");
+	printf("MMWN0dc:::lxKXKxl:::cd0XKklc::coONNOdd0WMMMMMMMMMMMWOO0xOkOOxkk0X0kO00k0KOOkOOkOKKkkkxkOOOOkkkkk00OX||======================================||\n");
+			printf("MMMMWNOdc:::lxKXKxl:::cd0XXkoc::lOWWNNWMMMMMMMMMMMMWXKXKKKXX0KKKNKO00KK0KKKK00K0XX00000KKK000KKKXNXW||	     			            ||\n");
+	printf("MMMMMMWNOdc:::lxKNKxl:::cd0NXklccOWMMMMMMMMMMMMMMMMWX0K0O00O00O0NK0KOO0OO000O0OO00O0O00O00OOXMMMMMMM||	     			            ||\n");
+	printf("MMMMMMMMWNOdc:::lxKXKxlc::lOWWXOONMMMMMMMMMMMMMMMMMMN000O0OOK00XWX00000OKK0K000OK0OKKKK0KKO0XMMMMMMM||	     	    MEHMET EROL             ||\n");
+	printf("MMMMMMMMMMWNOoc:::lxKXkl:::dXMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWMMMMMMMMMMMMMMMMMM||	       BIYOMEDIKAL MUHENDISI        ||\n");
+	printf("MMMMMMMMMMMMWNOoc::clolc::ckNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM||        BILGISAYAR MUHENDISLIGI       ||\n");
+	printf("MMMMMMMMMMMMMMWNOdc:::::clkXMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM||	        mhmterol@outlook.com	    ||\n");
+	printf("MMMMMMMMMMMMMMMMWXkocccld0NMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM||======================================||\n");
+
+}
