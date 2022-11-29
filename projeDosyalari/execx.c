@@ -4,73 +4,42 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-/*
-pid_t call(int argc, char *argv[]) {
-  int i,j;
-  int result = 0;
-  pid_t pid = fork();
-  if (pid == 0) {
-  
-    //execv("writef", argv);
-    execv (argv[3],argv);
-
-  }else
-  { 
-    return pid;
-  }
-}
-
-*/
 
 int main(int argc, char *argv[]) {
 
-  //pid_t pid = call(argc,argv);
-  //pid_t pid;
-  int pid;
-  int iArgs= atoi(argv[2]);
+  int pid; //forklama icin gerekli olan degiskenim
+  int iArgs= atoi(argv[2]); //gelen 2. parametre benim programin kac kere calisacagini gosterir.
   int j;
-  //pid = fork();
-  int argBoyut = ((sizeof(argv)) / (sizeof (int)));
+  int argBoyut = strlen(argv); //gelen arg boyu tutar.
+  int parametreKontrol = 0;
+
   
-  if(strcmp("writef", argv[3]) == 0){ //sadece programı istedigi kadar calıstırır.
-     if(argBoyut == 2){ //sadece ilgili program calismasi icin gereken parametre 4 yerine 2 olmalidir. argBoyut 2 olarak gelmekte.
-	  	for(j=0; j<iArgs; j++){
-	  		  pid = fork();
+  if(argv[3] != NULL){ //sadece programı istedigi kadar calıstırır.
+     if(argBoyut == 6){ //sadece ilgili program calismasi icin gereken parametre 4 yerinde olmalidir.
+	  	for(j=0; j<iArgs; j++){ //iArgs benim kac kere calisacagini tutuyordu.
+	  		  pid = fork();//her bir calismada bir fork islemi gerceklesmektedir.
 	  		  if(pid == 0){
-				  printf("New process got pid: %d - ppid : %d\n", getpid(), getppid());
-				  execv (argv[3],argv);
+	  		          if(parametreKontrol==0){
+				  printf("New process got pid: %d - ppid : %d \n", getpid(), getppid());
+				  //getpid ile pid, getppid ile ppid degerleri cekilir.
+				  execv (argv[3],argv); //gelen argumana gore ilgili program argumanlariyla gonderilir.
+				  }
 			  }
 		  }
 	  }
      else{
-     	printf("argBoyut : %d",argBoyut);
+     	printf("Yanlis Parametre, argBoyut : %d",argBoyut);//yanlis parametre kontrolu
      	exit(0);
      }
-     if(strcmp("-f", argv[4]) == 0){ // alınan parametreye gore dosyaya yazma islemi.
-	     if(argBoyut == 6){ //writef -f dosya calismasi icin gelmesi gereken parametre 6 olmalidir.
-		  for(j=0; j<(iArgs/2)-1; j++){
-		  printf("New process got pid: %d - ppid : %d\n", getpid(), getppid());
-		  	pid = fork();
-		  	if(pid == 0){
-			    if(argv[5] != NULL){
-			    	execv (argv[3],argv);
-			    }
-			}
-		   }
-		}
-  	  }
-  	  else{
-  	    	printf("yanlis parametre girildi. %d\n",argBoyut);
-		exit(0);
-  	  }
+
   }
   else{
-  	    	printf("yanlis parametre girildi. %d\n",argBoyut);
+  	    	printf("yanlis parametre girildi. 2 %d\n",argBoyut);//yanlis parametre kontrolu
 		exit(0);
   }
 
 
-  pid = wait(NULL); //bunu yazmassam bash,ls,cat calısmaz.
+  pid = wait(NULL); //bunu yazmassam bash,ls,cat calismamaktadir.
   return 0;
 }
 

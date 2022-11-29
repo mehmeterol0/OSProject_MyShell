@@ -6,32 +6,33 @@
 
 
 
-#define KOMUTLISTESI 7
+#define KOMUTLISTESI 7 //7 adet komut bulunmaktadir. o yuzden bu degistirilemeyecek bir degisken olarak tanimladim.
 
 int main()
 {
-    asciiResimOlustur();
-    //arayuzOlustur();
-    char girilenDeger[1000] = {'\0'};
-    char *ceviriciArgs[100] = {NULL};
-    char *processes[100] = {NULL};
-    char *komutlar[KOMUTLISTESI] = {"bash","execx", "cat","ls", "clear", "exit","help"}; 
+    asciiResimOlustur(); //ilk giristeki ascii code'lu arayuzu gosterir.
+    char girilenDeger[1000] = {'\0'}; //klavyeden girilen degeleri tutan array
+    char *ceviriciArgs[100] = {NULL}; //girilen degerleri saglikli bir sekilde cevirici degiskenleri tutan array
+    char *processes[100] = {NULL}; //girilen degeri ayirmaya yarayan islem arrayi
+    char *komutlar[KOMUTLISTESI] = {"bash","execx", "cat","ls", "clear", "exit","help"}; //terminal komutlarimi tutan arrayim
     
     int i;
 
-    while (1)
+    while (1) //aslinda shell bu sonsuz dongude olusuyor. 
     {
-        if (input(girilenDeger))
-            continue;
+        if (input(girilenDeger)) //kendi shelimizden girilen komutlari burdan input olarak gelip gelmedigini kontrol ediyoruz.
+            continue; //ve komutlar bir filtre gibi suzgecten gecmektedir.
 
-        ayir(girilenDeger, processes, "|"); 
+        ayir(girilenDeger, processes, "|"); //ilk parametre input, ikinci parametre islem ve | operatoru bizim ayiricimiz
         i = 0;
 
-        while (processes[i] != NULL)
+        while (processes[i] != NULL) //bir islem yoksa dongu surekli devam eder.
         {
             ayir(processes[i], ceviriciArgs, " "); 
             if (cmd(ceviriciArgs, komutlar))
             {
+            	//egerki yukardaki tanimlanan komutlar arrayindeki elemanlardan biriyle eslesmiyorsa,
+            	//yanlis komut girildi diye ekrana uyari basilir.
                 printf("yanlis bir komut girildi\n");
             }
             i++;
@@ -40,17 +41,18 @@ int main()
     return 0;
 }
 
-int bosmu(char *str)
+int bosmu(char *str) 
+
 {
-    while (*str != '\0')
+    while (*str != '\0') //c'de \0 bos deger olarak kabul edilir. dongu bos degilkene kadar devam eder.
     {
-        if (*str != ' ')
+        if (*str != ' ') //eger bos degilse 
         {
-            return 0;
+            return 0; //0 dondurur
         }
-        str++;
+        str++; 
     }
-    return 1;
+    return 1; //bossa 1 dondurur.
 }
 
 
@@ -59,15 +61,15 @@ int bosmu(char *str)
 
 int input(char *str)
 {
-    printf("\nmyshell>>");
-    fgets(str, 1000, stdin);
-    yeniSatir(str);
-    if (!bosmu(str))
+    printf("\nmyshell>>"); //surekli komut girildikten sonra myshell>> komutundan bir input girmesi icin bilgi basiyoruz.
+    fgets(str, 1000, stdin); //fgest le girilen degiskenleri tutuyoruz.
+    yeniSatir(str); //komut girildikten sonra yeni satira gecmek icin ilgili fonksiyonu cagiriyoruz.
+    if (!bosmu(str)) //girilen komut bos degilse 
     {
-        return 0;
+        return 0; //0 dondur
     }
 
-    return -1;
+    return -1; //else -1
 }
 
 int komutCalistir(char **args)
@@ -76,8 +78,8 @@ int komutCalistir(char **args)
     int pid = fork(); //ilk forklama islemi burda gerceklesir.
     int i,j; //donguler icin tanımlanan degiskenler
     int sonuc = 0; //fonksiyondan cikması icin gereken return degiskeni
-
-    int argBoyut = (sizeof(args) / sizeof(int)); //parametre olarak gelen dizinin boyu
+    int hataKontrol=0;
+    int argBoyut = strlen(args); //parametre olarak gelen dizinin boyu
     
     if (strcmp("exit", args[0]) == 0) //args[0] consoldaki ilk argumanı temsil eder. exit yazildiginda kendi shellimizden cikar
     {
@@ -85,7 +87,8 @@ int komutCalistir(char **args)
     }
     if (strcmp("clear", args[0]) == 0)//clear komutu ile console ekranı temizlenir.
     {	
-        temizle();  //temizle fonksiyonu asagidadir.
+        i = temizle();  //temizle fonksiyonu asagidadir.
+        hataKontrol=1;
     }
     
     
@@ -119,6 +122,7 @@ int komutCalistir(char **args)
 	    	i = execv("/bin/cat", args); // bu klasor normal terminaldeki cat islemleri ile birebir aynidir.
         }
         if(strcmp("help", args[0]) == 0){// help komutu calistirmak olusturdugum fonksiyonu cagiririm.
+        	hataKontrol=1;
             	helpKomutu(); //pdfte yok burasi ekstra ozellik ekledim.
         }
         if(strcmp("ls", args[0]) == 0){// ls komutu calistirmak icin /bin/ls klasoru calistirilir. 
@@ -134,8 +138,14 @@ int komutCalistir(char **args)
         }
         if (i < 0)
         {
-            printf("yanlis bir komut girildi\n"); //yanlis bir komut girildiginde ekrana hata yazdirilir.
-            exit(0);
+            if(hataKontrol!=1){ //clear ve help komutlari yanlis bir komut girildi olarak algilaniyordu. o yuzden 
+            //bu kontrol kullanilmistir.
+		printf("yanlis bir komut girildi\n"); //yanlis bir komut girildiginde ekrana hata yazdirilir.
+	        exit(0);
+            }
+	    if(hataKontrol == 1){
+	    	hataKontrol=0;
+	    }
         }
     }
     else
@@ -149,6 +159,7 @@ int komutCalistir(char **args)
     return sonuc; //sonuc dondurulur.
 }
 void helpKomutu(){
+//help komutundaki kullaniciya gosterilecek olan kisa hatirlatmalar..
         printf("||====================================================================================||\n");
 	printf("|| 1-) bash: direk console'a bash yazarak bash islemlerini gerceklestirebilirisiniz.  ||\n");
 	printf("|| 2-) execx: execx -t times programAdi seklinde kullanabilirsiniz.		      ||\n");
@@ -188,8 +199,10 @@ void ayir(char *str, char **cevirici, char *sinirlayici)
     int i = 0;
     while ((cevirici[i] = strsep(&str, sinirlayici)) != NULL)
     {
+    // strsep bir diziyi dizgiceklere ayirir. ilk parametresi deger, ikinci parametresi ise sinirlayici alir.
+    // oncelikle cevirici icersindeki bir elemanla strsep fonks deger eslesiyor ve bu deger null cikmiyorsa, dongu devam eder
         if (bosmu(cevirici[i]))
-        {
+        {//ceviricideki deger bos girilmeyene kadar dongu devam eder
             continue;
         }
         i++;
@@ -200,6 +213,7 @@ void yeniSatir(char *str)
 {
     while (*str != '\0')
     {
+    	//yeni satira gecmek icin \n ile gecildigini biliyoruz. \0 ile bos elemani temsil etmektedir.
         if (*str == '\n')
         {
             *str = '\0';
@@ -211,55 +225,33 @@ void yeniSatir(char *str)
 
 void temizle()
 {
-    system("clear");
+    system("clear"); //terminal ekranini temizler.
 }
 
-/*
-void arayuzOlustur(){
-        printf("                              ||======================================||\n");
-	printf("                              ||______________________________________||\n");
-	printf("                              ||.....Linux Shellime Hosgeldiniz.......||\n");
-	printf("                              ||_____________{Mehmet EROL}____________||\n");
-	printf("                              ||.....Kullanabileceginiz Komutlar......||\n");
-	printf("                              ||                                      ||\n");
-	printf("                              ||1- bash 		 	      ||\n");
-	printf("                              ||2- execx 			      ||\n");
-	printf("                              ||3- cat 				      ||\n");
-	printf("                              ||4- ls 				      ||\n");
-	printf("                              ||5- clear 			      ||\n");
-	printf("                              ||6- exit 			      ||\n");
-	printf("                              ||7- help : Komutlar hakkında bilgi     ||\n");
-	printf("                              ||icin help komutunu kullanınız..	      ||\n");
-	printf("                              ||				      ||\n");
-	printf("                              ||======================================||\n");
-	printf("\n");
-	printf("\n");
-}
-*/
 void asciiResimOlustur(){
 
-	printf("MMMMMMMMMMMMMMMMMMMW0ooONWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM||======================================||\n");
-	printf("MMMMMMMMMMMMMMMMMMMNxc:coONWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM||______________________________________||\n");
-	printf("MMMMMMMMMMMMMMWXOKWW0o:::coONWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM||.....Linux Shellime Hosgeldiniz.......||\n");
-	printf("MMMMMMMMMMMMWXkl:oKWWKxl:::coONWMMMMMMMMMMMMMMMMMMMMWNNXXXXXXXXNWMWNXK00KXNWMMMMWNXXNWMMMMMMMWNXXNWM||______________________________________||\n");
-	printf("MMMMMMMMMMWXklc::l0WNNNKxl:::coONWMMMMMMMMMMMMMMMMMNxcc:::::::ckNKxc;;;;;:lOWMMWkc:;l0WMMMMMWkc::lKM||.....Kullanabileceginiz Komutlar......||\n");
-	printf("MMMMMMMMWXkl:::co0NNkox0XKxl:::coONWMMMMMMMMMMMMMMMNo,',cxkkkk0X0c,,cxOOkxxKWMMXl,'',lKMMMMWO:',';kW||                                      ||\n");
-	printf("MMMMMMWXklc::coOXWMXd::lxKNKxl:::cdONWMMMMMMMMMMMMMNd,',xWMMMMMWx,',lKWMMMMMMMM0:';;,,dNMMMKl,;;',dN||1- bash 		 	            ||\n");
-	printf("MMMMWXklc::coOXXKXWNkc:::lx0XKxl:::cd0NMMMMMMMMMMMMNo,',dNWWWWWW0:,,,:dOXWMMMMWk;,od;';kWMXd,:xl',lX||2- execx 		 	            ||\n");
-	printf("MMWXklc::coOXXOocxXWN0dc::clxKXKxl:::cd0NWMMMMMMMMMNd,,,:clllldXW0o:,'',:oONWMXo,,xKo,,c0Wk;,xKo'':0||3- cat 		 	            ||\n");
-	printf("WXkl:::coOXXOoc::oKWNNX0dc:::lx0XKxl:::cd0NWMMMMMMMNd,',:odddd0WMMWXko:,'',lKMKc';kW0:',okc,lKNd,';k||4- ls 		 	            ||\n");
-	printf("klc::coOXXOoc::clONXdokXX0dc:::lxKNKxl:::cdKWMMMMMMNd,,,xWMMMMMMMMMMMWXx:,,,xWk;'c0MNx,',;,:OWWk;',d||5- clear 		 	            ||\n");
-	printf("c:::cxXWKdc:::cdKWWOc:cokXX0dc:::lxKNKxl::cxNMMMMMMNd,,,dWMMMMMWKO0XNNNOc,,:ONd,'lXMMKl,,,,dNMMO:''l||6- exit 		 	            ||\n");
-	printf("l:::cdKNXxl:::coONWKdc::cokXXOdc:::lxKNKxlckNMMMMMMNo,',dNMMMMMNx;;:ccc;,;cONKc',dNMMWO:',lKMMM0c'':||7- help : Komutlar hakkında bilgi     ||\n");
-	printf("0dc:::lxKXKxl:::cd0XXkoc::cokXX0dc:::o0WWK0XMMMMMMMW0ddx0WMMMMMMN0xdooodx0NMMXkdxKWMMMN0kOXWMMMNOdxx||icin help komutunu kullanınız..	    ||\n");
-	printf("WN0dc::clxKNKxl:::cd0XXklc::cokXXOdc:cxNMMMMMMMMMMMMNNNNNNNXXNWWWNNNWNNNNXNNWWNWWWNWNNNNWWWNWWNNNNXN||	     			            ||\n");
-	printf("MMWN0dc:::lxKXKxl:::cd0XKklc::coONNOdd0WMMMMMMMMMMMWOO0xOkOOxkk0X0kO00k0KOOkOOkOKKkkkxkOOOOkkkkk00OX||======================================||\n");
-			printf("MMMMWNOdc:::lxKXKxl:::cd0XXkoc::lOWWNNWMMMMMMMMMMMMWXKXKKKXX0KKKNKO00KK0KKKK00K0XX00000KKK000KKKXNXW||	     			            ||\n");
-	printf("MMMMMMWNOdc:::lxKNKxl:::cd0NXklccOWMMMMMMMMMMMMMMMMWX0K0O00O00O0NK0KOO0OO000O0OO00O0O00O00OOXMMMMMMM||	     			            ||\n");
-	printf("MMMMMMMMWNOdc:::lxKXKxlc::lOWWXOONMMMMMMMMMMMMMMMMMMN000O0OOK00XWX00000OKK0K000OK0OKKKK0KKO0XMMMMMMM||	     	    MEHMET EROL             ||\n");
-	printf("MMMMMMMMMMWNOoc:::lxKXkl:::dXMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWMMMMMMMMMMMMMMMMMM||	       BIYOMEDIKAL MUHENDISI        ||\n");
-	printf("MMMMMMMMMMMMWNOoc::clolc::ckNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM||        BILGISAYAR MUHENDISLIGI       ||\n");
-	printf("MMMMMMMMMMMMMMWNOdc:::::clkXMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM||	        mhmterol@outlook.com	    ||\n");
+printf("MMMMMMMMMMMMMMMMMMMW0ooONWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM||======================================||\n"); 
+	printf("MMMMMMMMMMMMMMMMMMMNxc coONWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM||______________________________________||\n"); 
+	printf("MMMMMMMMMMMMMMWXOKWW0o   coONWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM||.....Benim Shellime Hosgeldiniz.......||\n"); 
+	printf("MMMMMMMMMMMMWXkl oKWWKxl   coONWMMMMMMMMMMMMMMMMMMMMWNNXXXXXXXXNWMWNXK00KXNWMMMMWNXXNWMMMMMMMWNXXNWM||______________________________________||\n"); 
+	printf("MMMMMMMMMMWXklc  l0WNNNKxl   coONWMMMMMMMMMMMMMMMMMNxcc       ckNKxc      lOWMMWkc  l0WMMMMMWkc  lKM||.....Kullanabileceginiz Komutlar......||\n"); 
+	printf("MMMMMMMMWXkl   co0NNkox0XKxl   coONWMMMMMMMMMMMMMMMNo   cxkkkk0X0c  cxOOkxxKWMMXl    lKMMMMWO     kW||                                      ||\n"); 
+	printf("MMMMMMWXklc  coOXWMXd  lxKNKxl   cdONWMMMMMMMMMMMMMNd   xWMMMMMWx   lKWMMMMMMMM0      dNMMMKl     dN||1- bash 		 	            ||\n"); 
+	printf("MMMMWXklc  coOXXKXWNkc   lx0XKxl   cd0NMMMMMMMMMMMMNo   dNWWWWWW0     dOXWMMMMWk  od   kWMXd  xl  lX||2- execx 		 	            ||\n"); 
+	printf("MMWXklc  coOXXOocxXWN0dc  clxKXKxl   cd0NWMMMMMMMMMNd    clllldXW0o      oONWMXo  xKo  c0Wk  xKo   0||3- cat 		 	            ||\n"); 
+	printf("WXkl   coOXXOoc  oKWNNX0dc   lx0XKxl   cd0NWMMMMMMMNd    odddd0WMMWXko     lKMKc  kW0   okc lKNd   k||4- ls 		 	            ||\n"); 
+	printf("klc  coOXXOoc  clONXdokXX0dc   lxKNKxl   cdKWMMMMMMNd   xWMMMMMMMMMMMWXx    xWk  c0MNx      OWWk   d||5- clear 		 	            ||\n"); 
+	printf("c   cxXWKdc   cdKWWOc cokXX0dc   lxKNKxl  cxNMMMMMMNd   dWMMMMMWKO0XNNNOc   ONd  lXMMKl    dNMMO   l||6- exit 		 	            ||\n"); 
+	printf("l   cdKNXxl   coONWKdc  cokXXOdc   lxKNKxlckNMMMMMMNo   dNMMMMMNx         cONKc  dNMMWO   lKMMM0c   ||7- help   Komutlar hakkında bilgi     ||\n"); 
+	printf("0dc   lxKXKxl   cd0XXkoc  cokXX0dc   o0WWK0XMMMMMMMW0ddx0WMMMMMMN0xdooodx0NMMXkdxKWMMMN0kOXWMMMNOdxx||icin help komutunu kullanınız..	    ||\n"); 
+	printf("WN0dc  clxKNKxl   cd0XXklc  cokXXOdc cxNMMMMMMMMMMMMNNNNNNNXXNWWWNNNWNNNNXNNWWNWWWNWNNNNWWWNWWNNNNXN||	     			            ||\n"); 
+	printf("MMWN0dc   lxKXKxl   cd0XKklc  coONNOdd0WMMMMMMMMMMMWOO0xOkOOxkk0X0kO00k0KOOkOOkOKKkkkxkOOOOkkkkk00OX||======================================||\n"); 
+			printf("MMMMWNOdc   lxKXKxl   cd0XXkoc  lOWWNNWMMMMMMMMMMMMWXKXKKKXX0KKKNKO00KK0KKKK00K0XX00000KKK000KKKXNXW||	     			            ||\n"); 
+	printf("MMMMMMWNOdc   lxKNKxl   cd0NXklccOWMMMMMMMMMMMMMMMMWX0K0O00O00O0NK0KOO0OO000O0OO00O0O00O00OOXMMMMMMM||	     			            ||\n"); 
+	printf("MMMMMMMMWNOdc   lxKXKxlc  lOWWXOONMMMMMMMMMMMMMMMMMMN000O0OOK00XWX00000OKK0K000OK0OKKKK0KKO0XMMMMMMM||	     	    MEHMET EROL             ||\n"); 
+	printf("MMMMMMMMMMWNOoc   lxKXkl   dXMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWMMMMMMMMMMMMMMMMMM||	       BIYOMEDIKAL MUHENDISI        ||\n"); 
+	printf("MMMMMMMMMMMMWNOoc  clolc  ckNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM||        BILGISAYAR MUHENDISLIGI       ||\n"); 
+	printf("MMMMMMMMMMMMMMWNOdc     clkXMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM||	        mhmterol@outlook.com	    ||\n"); 
 	printf("MMMMMMMMMMMMMMMMWXkocccld0NMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM||======================================||\n");
 
 }
